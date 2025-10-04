@@ -66,8 +66,8 @@ JWT_REFRESH_SECRET=replace-with-strong-secret
 JWT_ACCESS_EXPIRES_IN=15m
 JWT_REFRESH_EXPIRES_IN=7d
 
-# Example database (uncomment and configure if used)
-# DATABASE_URL=postgres://user:password@localhost:5432/authgate
+# Example database 
+src/config/database.md
 
 Notes:
 - Use long, random values for secrets.
