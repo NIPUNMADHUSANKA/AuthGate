@@ -53,16 +53,14 @@ AuthGate is a service responsible for signup, login, token issuing/refresh, and 
    npm run dev
 
 5) Build and run in production
-   npm run build
    npm start
 
 ## Configuration
 Create a `.env` file with the following variables:
 
 PORT=3000
-NODE_ENV=development
 
-# Cryptography / tokens
+# Tokens
 JWT_ACCESS_SECRET=replace-with-strong-secret
 JWT_REFRESH_SECRET=replace-with-strong-secret
 JWT_ACCESS_EXPIRES_IN=15m
@@ -99,7 +97,6 @@ Headers: Authorization: Bearer <accessToken>
 Response: 200 OK { "id": "...", "email": "user@example.com" }
 
 ## Project Structure
-Suggested layout (adapt as needed):
 
 src/
   app.js            Express app bootstrap
@@ -107,20 +104,16 @@ src/
   routes/           Route definitions
   controllers/      Request handlers
   middlewares/      Auth + error middlewares
-  services/         Business logic (e.g., token, user)
-  repositories/     Data access (DB/ORM or in-memory)
-  utils/            Helpers (crypto, validation)
-  config/           Env + configuration helpers
+  services/         Business logic (e.g., token, user, DB)
+  utils/            Helpers (validation)
+  config/           Env + configuration helpers (.env)
 tests/              Unit/integration tests
 
 ## Scripts
 Common npm scripts to consider:
 - npm run dev            Start in watch mode (e.g., nodemon)
 - npm start              Start production build
-- npm run build          Build/compile (if using TypeScript/Bundler)
 - npm test               Run tests
-- npm run lint           Lint source
-- npm run format         Format code
 
 ## Security Notes
 - Always use HTTPS in production.
