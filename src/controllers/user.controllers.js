@@ -33,18 +33,18 @@ const generateToken = (user) =>{
   return {accessToken, refreshToken};
 }
 
-const refreshUserToken = async(req, res, next) =>{
+const refreshUserToken = async(req, res) =>{
   const { refreshToken } = req.body;
   if(!refreshToken) return res.senStatus(401);
   try {
      const {id, token_hash} = await getRefreshToken(req.user.id);
      if(!id) return res.sendStatus(403);
-     const validateToken = compareToken(refreshToken, token_hash);
+     const validateToken = await compareToken(refreshToken, token_hash);
      if(!validateToken) return res.sendStatus(403);
      const accessToken = generateAccessToken(req.user);
      return res.status(201).json({accessToken});
   } catch (error) {
-    return next(error);
+      throw error;
   }
 }
 

@@ -53,7 +53,7 @@ const getUserById = async (id) =>{
 const getRefreshToken = async (user_id) => {
   try {
     const [result] = await dbConnection.query(
-      "SELECT id, token_hash FROM refresh_tokens where user_id = ? AND expires_at > NOW()",
+      "SELECT id, token_hash FROM refresh_tokens where user_id = ? AND expires_at > NOW() ORDER BY expires_at DESC LIMIT 1",
       [user_id]);
     return result[0];
   } catch (error) {
