@@ -14,4 +14,40 @@ const saveUser = async (userData) => {
   }
 };
 
-module.exports = { saveUser };
+const saveToken = async(user_id, token_hash, expires_at) =>{
+  try {
+    const [result] = await dbConnection.query(
+      "INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL ? SECOND))",
+      [user_id, token_hash, expires_at]
+    )
+    return { id: result.insertId, user_id, expires_at };
+  } catch (error) {
+    throw error;
+  }
+}
+
+const getUserByEmail = async (email) =>{
+  try {
+    const [result] = await dbConnection.query(
+      "SELECT id, password_hash FROM users where email = ?", 
+      [email]
+    );
+    return result[0];
+  } catch (error) {
+      throw error; 
+  }
+};
+
+const getUserById = async (id) =>{
+  try {
+    const [result] = await dbConnection.query(
+      "SELECT id, email, role FROM users where id = ?", 
+      [id]
+    );
+    return result[0];
+  } catch (error) {
+      throw error; 
+  }
+};
+
+module.exports = { saveUser, getUserByEmail, getUserById, saveToken };

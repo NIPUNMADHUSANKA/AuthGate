@@ -13,4 +13,10 @@ const validateUser = (req, res, next) =>{
     return next();
 }
 
-module.exports = { validateUser }
+const checkUserRole = (req, res, next) =>{
+    if(!req.user) return res.sendStatus(401);
+    if(req.user.role === "user" || req.user.role === "admin") return next();
+    return next(new Error("Forbidden"));
+};
+
+module.exports = { validateUser, checkUserRole }
