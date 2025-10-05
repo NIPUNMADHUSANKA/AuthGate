@@ -15,3 +15,12 @@ CREATE TABLE users (
 ALTER TABLE users
 ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 0         -- user can log in?
 ADD COLUMN email_verified TINYINT(1) NOT NULL DEFAULT 0;
+
+CREATE TABLE refresh_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  token_hash VARCHAR(255) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
