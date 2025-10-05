@@ -1,6 +1,6 @@
 const ms = require('ms');
-const { saveUser, saveToken } = require('../services/user.services');
-const { hashPassword, hashToken } = require('../utils/hash');
+const { saveUser, saveToken, getRefreshToken } = require('../services/user.services');
+const { hashPassword, hashToken, compareToken } = require('../utils/hash');
 const { generateAccessToken, generateRefreshToken } = require('../utils/jwtToken');
 
 const userRegister = async (req, res, next) => {
@@ -33,4 +33,19 @@ const generateToken = (user) =>{
   return {accessToken, refreshToken};
 }
 
-module.exports = { userRegister, loginUser, generateToken };
+const refreshUserToken = async(req, res) =>{
+  const { refreshToken } = req.body;
+  if(!refreshToken) return res.senStatus(401);
+  try {
+     const {id, token_hash} = await getRefreshToken(req.user.id);
+     if(!id) return res.sendStatus(403);
+     const validateToken = await compareToken(refreshToken, token_hash);
+     if(!validateToken) return res.sendStatus(403);
+     const accessToken = generateAccessToken(req.user);
+     return res.status(201).json({accessToken});
+  } catch (error) {
+      throw error;
+  }
+}
+
+module.exports = { userRegister, loginUser, generateToken, refreshUserToken };
