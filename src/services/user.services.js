@@ -50,4 +50,15 @@ const getUserById = async (id) =>{
   }
 };
 
-module.exports = { saveUser, getUserByEmail, getUserById, saveToken };
+const getRefreshToken = async (user_id) => {
+  try {
+    const [result] = await dbConnection.query(
+      "SELECT id, token_hash FROM refresh_tokens where user_id = ? AND expires_at > NOW()",
+      [user_id]);
+    return result[0];
+  } catch (error) {
+    throw error;
+  }
+}
+
+module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken };
