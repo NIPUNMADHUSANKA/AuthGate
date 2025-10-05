@@ -1,3 +1,4 @@
+const { checkJWTToken } = require("../utils/jwtToken");
 const { userSchema } = require("../utils/userSchema");
 
 const validateUser = (req, res, next) =>{
@@ -19,4 +20,12 @@ const checkUserRole = (req, res, next) =>{
     return next(new Error("Forbidden"));
 };
 
-module.exports = { validateUser, checkUserRole }
+const verifyJWTToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];    
+    const user = authHeader && authHeader.split(' ')[1];
+    if(!user) return res.sendStatus(401);
+    const {valid} = checkJWTToken(user);
+    return valid ? next() : res.sendStatus(403);
+}
+
+module.exports = { validateUser, checkUserRole, verifyJWTToken }
