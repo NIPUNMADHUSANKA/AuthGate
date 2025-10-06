@@ -29,7 +29,7 @@ const saveToken = async(user_id, token_hash, expires_at) =>{
 const getUserByEmail = async (email) =>{
   try {
     const [result] = await dbConnection.query(
-      "SELECT id, password_hash FROM users where email = ?", 
+      "SELECT id, password_hash, is_active, email_verified FROM users where email = ?", 
       [email]
     );
     return result[0];

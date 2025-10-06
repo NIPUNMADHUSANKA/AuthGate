@@ -13,5 +13,6 @@ userrouter.get('/api/auth/status', checkUserRole, verifyJWTToken, (req,res)=>{
 
 userrouter.post('/api/auth/refreshToken', checkUserRole, refreshUserToken);
 
+userrouter.get('/api/auth/logout', checkUserRole, );
 
 module.exports = userrouter; 
