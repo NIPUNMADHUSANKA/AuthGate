@@ -61,4 +61,16 @@ const getRefreshToken = async (user_id) => {
   }
 }
 
-module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken };
+const deleteRefreshToken = async(user_id) =>{
+  try {
+    const [result] = await dbConnection.query(
+      "DELETE FROM refresh_tokens WHERE user_id = ?",
+      [user_id]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken , deleteRefreshToken};

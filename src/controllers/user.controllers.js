@@ -1,5 +1,5 @@
 const ms = require('ms');
-const { saveUser, saveToken, getRefreshToken } = require('../services/user.services');
+const { saveUser, saveToken, getRefreshToken, deleteRefreshToken } = require('../services/user.services');
 const { hashPassword, hashToken, compareToken } = require('../utils/hash');
 const { generateAccessToken, generateRefreshToken } = require('../utils/jwtToken');
 
@@ -48,4 +48,16 @@ const refreshUserToken = async(req, res) =>{
   }
 }
 
-module.exports = { userRegister, loginUser, generateToken, refreshUserToken };
+const userLogout = async(req, res) => {
+  try {
+    const deleteToken = await deleteRefreshToken(req.user.id);
+    if(!deleteToken) return res.status(400).json({message: "Logout Failed"});
+    req.logout((err) => {
+      return err ? res.status(500).json({message: "Logout Failed"}) : res.status(200).json({message: "Logged out successfully"});
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+
+module.exports = { userRegister, loginUser, generateToken, refreshUserToken, userLogout };
