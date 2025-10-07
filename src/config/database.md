@@ -13,7 +13,6 @@ CREATE TABLE users (
 
 
 ALTER TABLE users
-ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 0         -- user can log in?
 ADD COLUMN email_verified TINYINT(1) NOT NULL DEFAULT 0;
 
 CREATE TABLE refresh_tokens (

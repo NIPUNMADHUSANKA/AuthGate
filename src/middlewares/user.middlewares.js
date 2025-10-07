@@ -1,4 +1,4 @@
-const { checkJWTToken } = require("../utils/jwtToken");
+const { checkJWTToken, checkEmailActivateToken } = require("../utils/jwtToken");
 const { userSchema } = require("../utils/userSchema");
 
 const validateUser = (req, res, next) =>{
@@ -12,6 +12,19 @@ const validateUser = (req, res, next) =>{
     // Use sanitized/normalized value downstream
     req.body = value;
     return next();
+}
+
+const validateActivateAccount = (req, res, next) =>{
+    const {token, uid} = req.query;
+    if(!token || !uid) return next({ statusCode: 400, message: "Missing token or uid in query parameters" });
+    try {
+        const payload = checkEmailActivateToken(token);
+        if(!payload.valid || payload.decoded.id !== parseInt(uid)) return next({ statusCode: 400, message: "Invalid token or uid" });
+        req.emailVerify = {uid};
+        next();
+    } catch (error) {
+        return next(error);
+    }
 }
 
 const checkUserRole = (req, res, next) =>{
@@ -28,4 +41,4 @@ const verifyJWTToken = (req, res, next) => {
     return valid ? next() : res.sendStatus(403);
 }
 
-module.exports = { validateUser, checkUserRole, verifyJWTToken }
+module.exports = { validateUser, checkUserRole, validateActivateAccount, verifyJWTToken }

@@ -1,14 +1,15 @@
 const ms = require('ms');
-const { saveUser, saveToken, getRefreshToken, deleteRefreshToken } = require('../services/user.services');
+const { saveUser, saveToken, getRefreshToken, deleteRefreshToken, userAccountActivate } = require('../services/user.services');
 const { hashPassword, hashToken, compareToken } = require('../utils/hash');
-const { generateAccessToken, generateRefreshToken } = require('../utils/jwtToken');
+const { generateAccessToken, generateRefreshToken, generateEmailActivateToken } = require('../utils/jwtToken');
 
 const userRegister = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const hashed = await hashPassword(password);
     const user = await saveUser({ email, password: hashed });
-    return res.status(201).json({ userId: user.id, email: user.email, message: "User registered" });
+    const token = generateEmailActivateToken(user);
+    return res.status(201).json({ userId: user.id, email: user.email, token: token, messagepassword: "User registered" });
   } catch (error) {
     return next(error);
   }
@@ -60,4 +61,14 @@ const userLogout = async(req, res) => {
   }
 }
 
-module.exports = { userRegister, loginUser, generateToken, refreshUserToken, userLogout };
+const userActivate = async(req, res) =>{
+  try {
+    const { uid } = req.emailVerify;
+    const active = await userAccountActivate(uid, true);
+    return active ? res.status(200).json({message: "Email verified! You can now log in."}) : res.sendStatus(404);
+  } catch (error) {
+    throw error;
+  }
+}
+
+module.exports = { userRegister, loginUser, generateToken, refreshUserToken, userLogout, userActivate };
