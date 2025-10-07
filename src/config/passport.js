@@ -22,7 +22,7 @@ passport.use(new LocalStrategy({usernameField: "email"},
         try {
             const user = await getUserByEmail(email);
             if(!user) return done(new Error("Incorrect email or password"), false);
-            if(!user.is_active || !user.email_verified) return done(new Error("User is not active or email not verified"), false);
+            if(!user.email_verified) return done(new Error("Email is not verified"), false);
             const isValidPassword = await comparePassword(password, user.password_hash);
             if(!isValidPassword) return done(new Error("Incorrect email or password"), false);
             return done(null, { id: user.id });

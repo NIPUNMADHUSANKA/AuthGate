@@ -29,7 +29,7 @@ const saveToken = async(user_id, token_hash, expires_at) =>{
 const getUserByEmail = async (email) =>{
   try {
     const [result] = await dbConnection.query(
-      "SELECT id, password_hash, is_active, email_verified FROM users where email = ?", 
+      "SELECT id, password_hash, email_verified FROM users where email = ?", 
       [email]
     );
     return result[0];
@@ -72,5 +72,26 @@ const deleteRefreshToken = async(user_id) =>{
   }
 }
 
+const userAccountActivate = async(user_id, email_verified) =>{
+  try {
+    const [result] = await dbConnection.query(
+      "UPDATE users SET email_verified = ? WHERE id = ?",
+      [email_verified, user_id]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    throw error;
+  }
+}
 
-module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken , deleteRefreshToken};
+const checkAccountActivate = async(user_id) =>{
+  try {
+    const [result] = await dbConnection.query(
+      "SELECT email_verified FROM users WHERE id = ?",
+      [user_id]);
+    return result[0];
+  } catch (error) {
+    throw error;
+  }
+}
+
+module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken , deleteRefreshToken, userAccountActivate, checkAccountActivate};
