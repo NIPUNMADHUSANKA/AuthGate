@@ -83,4 +83,15 @@ const userAccountActivate = async(user_id, email_verified) =>{
   }
 }
 
-module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken , deleteRefreshToken, userAccountActivate};
+const checkAccountActivate = async(user_id) =>{
+  try {
+    const [result] = await dbConnection.query(
+      "SELECT email_verified FROM users WHERE id = ?",
+      [user_id]);
+    return result[0];
+  } catch (error) {
+    throw error;
+  }
+}
+
+module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken , deleteRefreshToken, userAccountActivate, checkAccountActivate};
