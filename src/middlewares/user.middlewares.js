@@ -1,4 +1,4 @@
-const { checkAccountActivate } = require("../services/user.services");
+const { checkAccountActivate, getUserById } = require("../services/user.services");
 const { checkJWTToken, checkEmailActivateToken } = require("../utils/jwtToken");
 const { userSchema } = require("../utils/userSchema");
 
@@ -44,4 +44,20 @@ const verifyJWTToken = (req, res, next) => {
     return valid ? next() : res.sendStatus(403);
 }
 
-module.exports = { validateUser, checkUserRole, validateActivateAccount, verifyJWTToken }
+
+const validateResendVerificationEmail = async(req, res, next) =>{
+    const { id } = req.params;
+    if(!id) return next({ statusCode: 400, message: "Missing id in params"});
+    try {
+        const user = await getUserById(id);
+        if(!user) return next({ statusCode: 404, message: "User not found"});
+        const {email_verified} = await checkAccountActivate(id);
+        if(email_verified) return res.status(200).json({ message: "Account already activated" });
+        req.resend_token =  { id: user.id, email: user.email };
+        next();     
+    } catch (error) {
+        next(error);
+    }
+}
+
+module.exports = { validateUser, checkUserRole, validateActivateAccount, verifyJWTToken, validateResendVerificationEmail }

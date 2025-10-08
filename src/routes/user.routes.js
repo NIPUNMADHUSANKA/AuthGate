@@ -1,6 +1,6 @@
 const passport = require("passport");
-const { userRegister, loginUser, refreshUserToken, userLogout, userActivate } = require("../controllers/user.controllers");
-const { validateUser, checkUserRole, verifyJWTToken, checkAdminRole, validateActivateAccount } = require("../middlewares/user.middlewares");
+const { userRegister, loginUser, refreshUserToken, userLogout, userActivate, resendVerificationEmail } = require("../controllers/user.controllers");
+const { validateUser, checkUserRole, verifyJWTToken, validateActivateAccount, validateResendVerificationEmail } = require("../middlewares/user.middlewares");
 
 const userrouter = require("express").Router();
 
@@ -15,6 +15,8 @@ userrouter.post('/api/auth/refreshToken', checkUserRole, refreshUserToken);
 
 userrouter.get('/api/auth/logout', checkUserRole, userLogout);
 
-userrouter.patch('/api/auth/verify', validateActivateAccount, userActivate )
+userrouter.get('/api/auth/verify', validateActivateAccount, userActivate )
+
+userrouter.post('/api/auth/resend-verification/:id', validateResendVerificationEmail, resendVerificationEmail);
 
 module.exports = userrouter; 
