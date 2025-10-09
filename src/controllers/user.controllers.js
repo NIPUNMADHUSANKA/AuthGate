@@ -1,5 +1,5 @@
 const ms = require('ms');
-const { saveUser, saveToken, getRefreshToken, deleteRefreshToken, userAccountActivate } = require('../services/user.services');
+const { saveUser, saveToken, getRefreshToken, deleteRefreshToken, userAccountActivate, deleteUserAccountService } = require('../services/user.services');
 const { hashPassword, hashToken, compareToken } = require('../utils/hash');
 const { generateAccessToken, generateRefreshToken, generateEmailActivateToken } = require('../utils/jwtToken');
 const { sendMail } = require('../utils/sendmail');
@@ -83,4 +83,17 @@ const resendVerificationEmail = async(req, res) =>{
   }
 }
 
-module.exports = { userRegister, loginUser, generateToken, refreshUserToken, userLogout, userActivate, resendVerificationEmail };
+const deleteUserAccount = async(req, res)=>{
+  const { id } = req.params;
+  if(!id) return res.status(400).json({message: 'Missing id in params'});
+  try {
+    const deleteUser = await deleteUserAccountService(id);
+    return deleteUser
+    ? res.status(200).json({ message: "Your account has been successfully deleted." })
+    : res.status(404).json({ message: "User account could not be found." });
+  } catch (error) {
+    throw error; 
+  }
+}
+
+module.exports = { userRegister, loginUser, generateToken, refreshUserToken, userLogout, userActivate, resendVerificationEmail, deleteUserAccount };
