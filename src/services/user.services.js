@@ -94,4 +94,21 @@ const checkAccountActivate = async(user_id) =>{
   }
 }
 
-module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken , deleteRefreshToken, userAccountActivate, checkAccountActivate};
+const deleteUserAccountService = async(user_id) =>{
+  try {
+    const [result] = await dbConnection.query(
+      "DELETE FROM users WHERE id=?",
+      [user_id]);
+
+    const [res] = await dbConnection.query(
+      "DELETE FROM sessions WHERE JSON_UNQUOTE(JSON_EXTRACT(CAST(data AS JSON), '$.passport.user')) = ?",
+      [user_id]);
+
+    return true && res.affectedRows > 0;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken , deleteRefreshToken, userAccountActivate, checkAccountActivate, deleteUserAccountService};
