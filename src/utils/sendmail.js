@@ -7,7 +7,7 @@ const transporter = nodemailer.createTransport({
     auth: {user: process.env.SMTP_USER, pass: process.env.SMTP_PASS}
 })
 
-async function sendMail(to, id, token) {
+async function sendVerifyEmail(to, id, token) {
     await transporter.sendMail({
         from: process.env.MAIL_FROM,
         to: to,
@@ -17,4 +17,34 @@ async function sendMail(to, id, token) {
     });
 }
 
-module.exports = { sendMail };
+async function sendForgotPasswordEmail(to, id, token) {
+    await transporter.sendMail({
+    from: process.env.MAIL_FROM,
+    to: to,
+    subject: "Reset your password - AuthGate",
+    html: `
+        <h2>Password Reset Request</h2>
+        <p>We received a request to reset your password for your AuthGate account.</p>
+        <p>If you made this request, please reset your password by clicking the button below:</p>
+        <br>
+        <p>
+            <a href='https://yourapp.com/api/auth/reset-password?token=${token}&uid=${id}' 
+               style='background:#4CAF50;color:#fff;padding:10px 15px;text-decoration:none;border-radius:5px;'>
+               Reset Password
+            </a>
+        </p>
+        <br>
+        <p>If you didn’t request a password reset, you can safely ignore this email.</p>
+    `,
+    text: `Password Reset Request
+
+        We received a request to reset your password for your AuthGate account.
+
+        If you made this request, please reset your password using the link below:
+        https://yourapp.com/api/auth/reset-password?token=${token}&uid=${id}
+
+        If you didn’t request a password reset, you can safely ignore this email.`
+    });
+}
+
+module.exports = { sendVerifyEmail, sendForgotPasswordEmail };

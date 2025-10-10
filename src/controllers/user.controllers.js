@@ -1,8 +1,8 @@
 const ms = require('ms');
-const { saveUser, saveToken, getRefreshToken, deleteRefreshToken, userAccountActivate, deleteUserAccountService } = require('../services/user.services');
+const { saveUser, saveToken, getRefreshToken, deleteRefreshToken, userAccountActivate, deleteUserAccountService, getUserByEmail } = require('../services/user.services');
 const { hashPassword, hashToken, compareToken } = require('../utils/hash');
 const { generateAccessToken, generateRefreshToken, generateEmailActivateToken } = require('../utils/jwtToken');
-const { sendMail } = require('../utils/sendmail');
+const { sendVerifyEmail, sendForgotPasswordEmail } = require('../utils/sendmail');
 
 const userRegister = async (req, res, next) => {
   const { email, password } = req.body;
@@ -10,7 +10,7 @@ const userRegister = async (req, res, next) => {
     const hashed = await hashPassword(password);
     const user = await saveUser({ email, password: hashed });
     const token = generateEmailActivateToken(user);
-    await sendMail(user.email, user.id, token);
+    await sendVerifyEmail(user.email, user.id, token);
     return res.status(201).json({ userId: user.id, email: user.email, message: "User registered successfully. Please check your email to verify your account." });
   } catch (error) {
     return next(error);
@@ -76,7 +76,7 @@ const userActivate = async(req, res) =>{
 const resendVerificationEmail = async(req, res) =>{
   try {
     const token = generateEmailActivateToken(req.resend_token);
-    await sendMail(req.resend_token.email, req.resend_token.id, token);
+    await sendVerifyEmail(req.resend_token.email, req.resend_token.id, token);
     return res.status(201).json({ message: "Verification email resent successfully. Please check your inbox." });
   } catch (error) {
     throw error;
@@ -96,4 +96,14 @@ const deleteUserAccount = async(req, res)=>{
   }
 }
 
-module.exports = { userRegister, loginUser, generateToken, refreshUserToken, userLogout, userActivate, resendVerificationEmail, deleteUserAccount };
+const sendChangePasswordEmail = async(req, res) =>{
+  try {
+    const token = generateEmailActivateToken(req.resend_token);
+    await sendForgotPasswordEmail(req.resend_token.email, req.resend_token.id, token);
+    return res.status(201).json({ message: "Password reset email has been sent successfully. Please check your inbox." });
+  } catch (error) {
+    throw error;
+  }
+}
+
+module.exports = { userRegister, loginUser, generateToken, refreshUserToken, userLogout, userActivate, resendVerificationEmail, deleteUserAccount, sendChangePasswordEmail };
