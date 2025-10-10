@@ -1,6 +1,6 @@
-const { checkAccountActivate, getUserById } = require("../services/user.services");
+const { checkAccountActivate, getUserById, getUserByEmail } = require("../services/user.services");
 const { checkJWTToken, checkEmailActivateToken } = require("../utils/jwtToken");
-const { userSchema } = require("../utils/userSchema");
+const { userSchema, userEmailSchema } = require("../utils/userSchema");
 
 const validateUser = (req, res, next) =>{
     
@@ -60,4 +60,20 @@ const validateResendVerificationEmail = async(req, res, next) =>{
     }
 }
 
-module.exports = { validateUser, checkUserRole, validateActivateAccount, verifyJWTToken, validateResendVerificationEmail }
+const validforgetPasswordEmail = async(req, res, next) =>{
+    const {error, value}  = userEmailSchema.validate(req.body);
+    if (error) {
+        return next({ statusCode: 400, message: error.details[0].message });
+    }
+    req.body = value;
+    try {
+        const user = await getUserByEmail(value.email);
+        if(!user) return next({ statusCode: 404, message: "User not found"});
+        req.resend_token =  { id: user.id, email: value.email };
+    } catch (error) {
+        next(error);
+    }
+    return next();
+}
+
+module.exports = { validateUser, checkUserRole, validateActivateAccount, verifyJWTToken, validateResendVerificationEmail, validforgetPasswordEmail }
