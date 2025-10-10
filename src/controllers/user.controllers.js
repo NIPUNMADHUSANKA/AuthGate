@@ -1,5 +1,5 @@
 const ms = require('ms');
-const { saveUser, saveToken, getRefreshToken, deleteRefreshToken, userAccountActivate, deleteUserAccountService, getUserByEmail } = require('../services/user.services');
+const { saveUser, saveToken, getRefreshToken, deleteRefreshToken, userAccountActivate, deleteUserAccountService, getUserByEmail, userPasswordUpdate } = require('../services/user.services');
 const { hashPassword, hashToken, compareToken } = require('../utils/hash');
 const { generateAccessToken, generateRefreshToken, generateEmailActivateToken } = require('../utils/jwtToken');
 const { sendVerifyEmail, sendForgotPasswordEmail } = require('../utils/sendmail');
@@ -106,4 +106,24 @@ const sendChangePasswordEmail = async(req, res) =>{
   }
 }
 
-module.exports = { userRegister, loginUser, generateToken, refreshUserToken, userLogout, userActivate, resendVerificationEmail, deleteUserAccount, sendChangePasswordEmail };
+const ChangePassword = async(req, res)=>{
+  try {
+    const {uid} = req.emailVerify;
+    const {newPassword} = req.body;
+    const hashed = await hashPassword(newPassword);
+    const changedPassword = await userPasswordUpdate(uid, hashed);
+    if (changedPassword) {
+      return res.status(200).json({
+        message: "Password updated successfully.",
+      });
+    } else {
+      return res.status(400).json({
+        message: "Password update failed. Please try again.",
+      });
+}
+  } catch (error) {
+    throw error;
+  }
+}
+
+module.exports = { userRegister, loginUser, generateToken, refreshUserToken, userLogout, userActivate, resendVerificationEmail, deleteUserAccount, sendChangePasswordEmail, ChangePassword };

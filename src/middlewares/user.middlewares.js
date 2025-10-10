@@ -1,6 +1,6 @@
 const { checkAccountActivate, getUserById, getUserByEmail } = require("../services/user.services");
 const { checkJWTToken, checkEmailActivateToken } = require("../utils/jwtToken");
-const { userSchema, userEmailSchema } = require("../utils/userSchema");
+const { userSchema, userEmailSchema, userChangePasswordSchema } = require("../utils/userSchema");
 
 const validateUser = (req, res, next) =>{
     
@@ -76,4 +76,26 @@ const validforgetPasswordEmail = async(req, res, next) =>{
     return next();
 }
 
-module.exports = { validateUser, checkUserRole, validateActivateAccount, verifyJWTToken, validateResendVerificationEmail, validforgetPasswordEmail }
+const validateChangePasswordUrl = async(req, res, next) =>{
+    const {token, uid} = req.query;
+    if(!token || !uid) return next({ statusCode: 400, message: "Missing token or uid in query parameters" });
+    try {
+        const payload = checkEmailActivateToken(token);
+        if(!payload.valid || payload.decoded.id !== parseInt(uid)) return next({ statusCode: 400, message: "Invalid token or uid" });
+        req.emailVerify = {uid};
+        next();
+    } catch (error) {
+     return next(error);   
+    }
+}
+
+const validateChangePasswordDetails = (req, res, next) =>{
+    const {error, value} = userChangePasswordSchema.validate(req.body);
+     if (error) {
+        return next({ statusCode: 400, message: error.details[0].message });
+    }
+    req.body = value;
+    next();
+} 
+
+module.exports = { validateUser, checkUserRole, validateActivateAccount, verifyJWTToken, validateResendVerificationEmail, validforgetPasswordEmail, validateChangePasswordUrl, validateChangePasswordDetails }
