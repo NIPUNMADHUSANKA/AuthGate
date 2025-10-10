@@ -1,6 +1,6 @@
 const passport = require("passport");
-const { userRegister, loginUser, refreshUserToken, userLogout, userActivate, resendVerificationEmail, deleteUserAccount, sendChangePasswordEmail } = require("../controllers/user.controllers");
-const { validateUser, checkUserRole, verifyJWTToken, validateActivateAccount, validateResendVerificationEmail, validforgetPasswordEmail } = require("../middlewares/user.middlewares");
+const { userRegister, loginUser, refreshUserToken, userLogout, userActivate, resendVerificationEmail, deleteUserAccount, sendChangePasswordEmail, ChangePassword } = require("../controllers/user.controllers");
+const { validateUser, checkUserRole, verifyJWTToken, validateActivateAccount, validateResendVerificationEmail, validforgetPasswordEmail, validateChangePasswordDetails, validateChangePasswordUrl } = require("../middlewares/user.middlewares");
 
 const userrouter = require("express").Router();
 
@@ -22,5 +22,7 @@ userrouter.post('/api/auth/resend-verification/:id', validateResendVerificationE
 userrouter.delete('/api/auth/deleteAccount/:id', verifyJWTToken, checkUserRole, deleteUserAccount)
 
 userrouter.post('/api/auth/forgot-password', validforgetPasswordEmail, sendChangePasswordEmail)
+
+userrouter.post('/api/auth/change-password', validateChangePasswordUrl, validateChangePasswordDetails, ChangePassword);
 
 module.exports = userrouter; 

@@ -83,6 +83,17 @@ const userAccountActivate = async(user_id, email_verified) =>{
   }
 }
 
+const userPasswordUpdate = async(user_id, hashPassword) =>{
+  try {
+    const [result] = await dbConnection.query(
+      "UPDATE users SET password_hash = ? WHERE id = ?",
+      [hashPassword, user_id]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const checkAccountActivate = async(user_id) =>{
   try {
     const [result] = await dbConnection.query(
@@ -111,4 +122,4 @@ const deleteUserAccountService = async(user_id) =>{
 }
 
 
-module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken , deleteRefreshToken, userAccountActivate, checkAccountActivate, deleteUserAccountService};
+module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken , deleteRefreshToken, userAccountActivate, checkAccountActivate, userPasswordUpdate, deleteUserAccountService};
