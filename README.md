@@ -18,53 +18,94 @@ Modern, minimal authentication gateway built with Express.js. This README gives 
 - License
 
 ## Overview
-AuthGate is a service responsible for signup, login, token issuing/refresh, and user session validation for downstream services. It’s designed to be lightweight and easy to extend.
+AuthGate handles user signup and login (local + Google OAuth), access/refresh token management, email verification, password resets, session/status validation, and role-based access to protected resources, with a lightweight, extensible design.
 
 ## Features
-- Local email/password authentication
+- Local authentication with email/password (Passport Local strategy)
+- Google OAuth2 authentication
 - JWT-based stateless sessions (access + refresh tokens)
-- Protected routes via middleware
-- Extensible providers (e.g., OAuth) and storage layers
-- Ready-to-adapt request/response shapes and error handling
+- Protected routes with middleware (verifyJWTToken, checkUserRole)
+- Session management
+- Email verification and re-verification flow
+- Password reset support (forgot + change password endpoints)
+- Refresh token rotation and logout handling
+- Account management (delete account endpoint)
+- Rate limiting (authLimiter) on sensitive routes
+- Extensible design for adding more providers and storage layers
+- Customizable request/response shapes and structured error handling
 
 ## Tech Stack
 - Node.js + Express.js
+- Passport.js — authentication strategies (Local, Google OAuth2)
 - JSON Web Tokens (JWT)
-- Dotenv for configuration
-- Jest or Vitest (optional) for tests
+- MySQL
+- Dotenv — environment-based configuration management
+- Express Middleware — for validation, request limiting, and error handling
+- Jest / Vitest — unit & integration testing framework
+- nodemailer — email delivery (verification, password reset)
 
 ## Prerequisites
 - Node.js 18+ and npm 9+
 - Git (to clone)
+- Database (e.g., MySQL/Postgres/SQLite) if you plan to persist users  
 
 ## Getting Started
 1) Clone the repository
    git clone https://github.com/NIPUNMADHUSANKA/AuthGate.git
-   cd AuthGate
 
-2) Install dependencies
-   npm ci
+   **cd AuthGate**
 
-3) Configure environment
-   - Copy the sample values below into a `.env` file at the project root.
+3) Install dependencies
+
+   **npm ci**
+
+5) Configure environment
+   - Copy the sample values below into a `.env` file.
    - Adjust to your environment.
 
-4) Run in development
-   npm run dev
+6) Run in development
 
-5) Build and run in production
-   npm start
+   **npm run dev**
+
+8) Build and run in production
+
+   **npm start**
 
 ## Configuration
-Create a `.env` file with the following variables:
+In the ./src/config/ directory, create a .env file and define the following variables:
 
 PORT=3000
 
-# Tokens
-JWT_ACCESS_SECRET=replace-with-strong-secret
-JWT_REFRESH_SECRET=replace-with-strong-secret
-JWT_ACCESS_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
+**Database** <br>
+DB_HOST=localhost <br>
+DB_USER=root <br>
+DB_PASSWORD=replace-with-password <br>
+DB_NAME=authgate <br>
+DB_PORT=3306 <br>
+DB_POOL_SIZE=10 <br>
+
+**Tokens** <br>
+JWT_ACCESS_SECRET=replace-with-strong-secret <br>
+JWT_REFRESH_SECRET=replace-with-strong-secret <br>
+JWT_ACCESS_EXPIRES_IN=15m <br>
+JWT_REFRESH_EXPIRES_IN=7d <br>
+JWT_EMAIL_SECRET=replace-with-strong-secret <br>
+JWT_EMAIL_EXPIRES_IN= 1d <br>
+
+**App** <br>
+SESSION_SECRET=replace-with-strong-random-string <br>
+
+**SMTP (Mail)** <br>
+SMTP_HOST=smtp.example.com <br>
+SMTP_PORT=465 <br>
+SMTP_USER=replace-with-username <br>
+SMTP_PASS=replace-with-password <br>
+MAIL_FROM="AuthGate <no-reply@yourapp.com>" <br>
+
+**Google OAuth2** <br>
+GOOGLE_CLIENT_ID=replace-with-client-id <br>
+GOOGLE_CLIENT_SECRET=replace-with-client-secret <br>
+GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/login/google/callback <br>
 
 # Example database 
 src/config/database.md
