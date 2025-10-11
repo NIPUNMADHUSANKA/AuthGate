@@ -33,15 +33,17 @@ const validateActivateAccount = async(req, res, next) =>{
 const checkUserRole = (req, res, next) =>{
     if(!req.user) return res.sendStatus(401);
     if(req.user.role === "user" || req.user.role === "admin") return next();
-    return next(new Error("Forbidden"));
+    return next({ statusCode: 403, message: "Forbidden" });
 };
 
 const verifyJWTToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];    
-    const user = authHeader && authHeader.split(' ')[1];
-    if(!user) return res.sendStatus(401);
-    const {valid} = checkJWTToken(user);
-    return valid ? next() : res.sendStatus(403);
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if(!token) return res.sendStatus(401);
+    const { valid, decoded } = checkJWTToken(token);
+    if(!valid || !decoded) return res.sendStatus(403);
+    if (!req.user) return res.sendStatus(403); 
+    return next();
 }
 
 

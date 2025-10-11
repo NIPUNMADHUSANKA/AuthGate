@@ -1,7 +1,7 @@
 const ms = require('ms');
 const { saveUser, saveToken, getRefreshToken, deleteRefreshToken, userAccountActivate, deleteUserAccountService, getUserByEmail, userPasswordUpdate } = require('../services/user.services');
 const { hashPassword, hashToken, compareToken } = require('../utils/hash');
-const { generateAccessToken, generateRefreshToken, generateEmailActivateToken } = require('../utils/jwtToken');
+const { generateAccessToken, generateRefreshToken, generateEmailActivateToken, checkRefreshToken } = require('../utils/jwtToken');
 const { sendVerifyEmail, sendForgotPasswordEmail } = require('../utils/sendmail');
 
 const userRegister = async (req, res, next) => {
@@ -38,14 +38,18 @@ const generateToken = (user) =>{
 
 const refreshUserToken = async(req, res) =>{
   const { refreshToken } = req.body;
-  if(!refreshToken) return res.senStatus(401);
+  if(!refreshToken) return res.sendStatus(401);
   try {
-     const {id, token_hash} = await getRefreshToken(req.user.id);
-     if(!id) return res.sendStatus(403);
-     const validateToken = await compareToken(refreshToken, token_hash);
+     const { valid, decoded } = checkRefreshToken(refreshToken);
+     if(!valid || !decoded) return res.sendStatus(403);
+     const userId = decoded.id || decoded.sub;
+     if(!userId) return res.sendStatus(403);
+     const record = await getRefreshToken(userId);
+     if(!record || !record.id) return res.sendStatus(403);
+     const validateToken = await compareToken(refreshToken, record.token_hash);
      if(!validateToken) return res.sendStatus(403);
      const accessToken = generateAccessToken(req.user);
-     return res.status(201).json({accessToken});
+     return res.status(200).json({accessToken});
   } catch (error) {
       throw error;
   }
@@ -87,6 +91,9 @@ const deleteUserAccount = async(req, res)=>{
   const { id } = req.params;
   if(!id) return res.status(400).json({message: 'Missing id in params'});
   try {
+    if (!req.user) return res.sendStatus(401);
+    const isOwner = Number(req.user.id) === Number(id);
+    if (!isOwner) return res.sendStatus(403);
     const deleteUser = await deleteUserAccountService(id);
     return deleteUser
     ? res.status(200).json({ message: "Your account has been successfully deleted." })

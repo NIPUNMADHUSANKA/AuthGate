@@ -30,4 +30,13 @@ const checkJWTToken = (token) => {
   }
 };
 
-module.exports = { generateAccessToken, generateRefreshToken, checkJWTToken, generateEmailActivateToken, checkEmailActivateToken }
+const checkRefreshToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    return { valid: true, decoded };
+  } catch (err) {
+    return { valid: false, error: err.message };
+  }
+}
+
+module.exports = { generateAccessToken, generateRefreshToken, checkJWTToken, checkRefreshToken, generateEmailActivateToken, checkEmailActivateToken }

@@ -12,7 +12,7 @@ userrouter.get('/api/auth/status', verifyJWTToken, checkUserRole, (req,res)=>{
     return req.user ? res.send(req.user) : res.sendStatus(401);
 })
 
-userrouter.post('/api/auth/refreshToken', checkUserRole, refreshUserToken);
+userrouter.post('/api/auth/refreshToken', authLimiter, refreshUserToken);
 
 userrouter.get('/api/auth/logout', checkUserRole, userLogout);
 
