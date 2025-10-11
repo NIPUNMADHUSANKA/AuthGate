@@ -28,7 +28,7 @@ async function sendForgotPasswordEmail(to, id, token) {
         <p>If you made this request, please reset your password by clicking the button below:</p>
         <br>
         <p>
-            <a href='https://yourapp.com/api/auth/reset-password?token=${token}&uid=${id}' 
+            <a href='https://yourapp.com/api/auth/change-password?token=${token}&uid=${id}' 
                style='background:#4CAF50;color:#fff;padding:10px 15px;text-decoration:none;border-radius:5px;'>
                Reset Password
             </a>
@@ -41,7 +41,7 @@ async function sendForgotPasswordEmail(to, id, token) {
         We received a request to reset your password for your AuthGate account.
 
         If you made this request, please reset your password using the link below:
-        https://yourapp.com/api/auth/reset-password?token=${token}&uid=${id}
+        https://yourapp.com/api/auth/change-password?token=${token}&uid=${id}
 
         If you didn’t request a password reset, you can safely ignore this email.`
     });
