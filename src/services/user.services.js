@@ -38,6 +38,30 @@ const getUserByEmail = async (email) =>{
   }
 };
 
+const getUserByGoogle = async (google_id) =>{
+  try {
+    const [result] = await dbConnection.query(
+      "SELECT id, password_hash, email, email_verified FROM users where google_id = ?", 
+      [google_id]
+    );
+    return result[0];
+  } catch (error) {
+      throw error; 
+  }
+};
+
+const updateUserByGoogle = async (email, google_id) =>{
+  try {
+    const [result] = await dbConnection.query(
+      "UPDATE users SET google_id=? WHERE email=?", 
+      [google_id, email]
+    );
+    return result.affectedRows > 0;
+  } catch (error) {
+      throw error; 
+  }
+};
+
 const getUserById = async (id) =>{
   try {
     const [result] = await dbConnection.query(
@@ -122,4 +146,4 @@ const deleteUserAccountService = async(user_id) =>{
 }
 
 
-module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken , deleteRefreshToken, userAccountActivate, checkAccountActivate, userPasswordUpdate, deleteUserAccountService};
+module.exports = { saveUser, getUserByEmail, getUserById, saveToken, getRefreshToken, updateUserByGoogle, getUserByGoogle, deleteRefreshToken, userAccountActivate, checkAccountActivate, userPasswordUpdate, deleteUserAccountService};
