@@ -16,15 +16,6 @@ const swaggerOptions = {
                 description:'AuthGate is a modern authentication gateway built with Node.js and Express.js. It provides secure user signup/login, Google OAuth2, JWT-based session management, email verification, password resets, and role-based access control — all in a lightweight, extensible design.',
             },
             servers: [{ url: 'http://localhost:3000' }],
-            components: {
-              securitySchemes: {
-                bearerAuth: {
-                  type: 'http',
-                  scheme: 'bearer',
-                  bearerFormat: 'JWT',
-                },
-              },
-            },
         },
         apis: ['src/routes/*.js'],
 };
