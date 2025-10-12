@@ -115,27 +115,10 @@ Notes:
 - Keep secrets out of version control and rotation-safe in production.
 
 ## API Endpoints
-Below are example shapes. Align them with your implementation.
+<img width="1918" height="1017" alt="image" src="https://github.com/user-attachments/assets/9cf62ba2-50be-4051-b5a0-981d523310ef" />
+<br>
+<img width="1877" height="680" alt="image" src="https://github.com/user-attachments/assets/bd9c340b-e32c-4c76-9d6f-dfc95c98b90c" />
 
-POST /api/auth/register
-Request: { "email": "user@example.com", "password": "StrongP@ssw0rd" }
-Response: 201 Created { "id": "...", "email": "user@example.com" }
-
-POST /api/auth/login
-Request: { "email": "user@example.com", "password": "StrongP@ssw0rd" }
-Response: 200 OK { "accessToken": "...", "refreshToken": "..." }
-
-POST /api/auth/refresh
-Request: { "refreshToken": "..." }
-Response: 200 OK { "accessToken": "...", "refreshToken": "..." }
-
-POST /api/auth/logout
-Request: { "refreshToken": "..." }
-Response: 204 No Content
-
-GET /api/users/me
-Headers: Authorization: Bearer <accessToken>
-Response: 200 OK { "id": "...", "email": "user@example.com" }
 
 ## Project Structure
 
