@@ -1,28 +1,42 @@
-create database AuthGate;
+CREATE DATABASE "AuthGate";
 
-use AuthGate;
-
+-- users table (PostgreSQL)
 CREATE TABLE users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
+  id BIGSERIAL PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  role VARCHAR(50) DEFAULT 'user', -- e.g. 'user', 'admin'
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  password_hash VARCHAR(255),                
+  role VARCHAR(50) NOT NULL DEFAULT 'user',  -- e.g. user/admin
+  email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  google_id VARCHAR(255) UNIQUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Auto-update updated_at on update (Postgres needs a trigger)
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-ALTER TABLE users
-ADD COLUMN email_verified TINYINT(1) NOT NULL DEFAULT 0;
-ADD COLUMN google_id VARCHAR(255) NULL UNIQUE;
+CREATE TRIGGER trg_users_updated_at
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
 
-ALTER TABLE users MODIFY password_hash VARCHAR(255) NULL;
 
+-- refresh_tokens table (PostgreSQL)
 CREATE TABLE refresh_tokens (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL,
   token_hash VARCHAR(255) NOT NULL,
-  expires_at DATETIME NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT fk_refresh_tokens_user
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_refresh_tokens_user_id ON refresh_tokens(user_id);
+CREATE INDEX idx_refresh_tokens_expires_at ON refresh_tokens(expires_at);

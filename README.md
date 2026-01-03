@@ -38,7 +38,7 @@ AuthGate handles user signup and login (local + Google OAuth), access/refresh to
 - Node.js + Express.js
 - Passport.js — authentication strategies (Local, Google OAuth2)
 - JSON Web Tokens (JWT)
-- MySQL
+- PostgreSQL
 - Dotenv — environment-based configuration management
 - Express Middleware — for validation, request limiting, and error handling
 - Jest / Vitest — unit & integration testing framework
@@ -77,12 +77,7 @@ In the ./src/config/ directory, create a .env file and define the following vari
 PORT=3000
 
 **Database** <br>
-DB_HOST=localhost <br>
-DB_USER=root <br>
-DB_PASSWORD=replace-with-password <br>
-DB_NAME=authgate <br>
-DB_PORT=3306 <br>
-DB_POOL_SIZE=10 <br>
+DATABASE_URL=DATABASE_URL <br>
 
 **Tokens** <br>
 JWT_ACCESS_SECRET=replace-with-strong-secret <br>
@@ -159,7 +154,7 @@ Common npm scripts to consider:
 - **App won’t start**
   - Ensure `.env` is loaded (path: `./src/config/.env`, `require('dotenv').config({ path: './src/config/.env' })`).
   - Verify Node.js version (18+) and `npm ci` completed without errors.
-  - Check DB vars (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_PORT`) and that the DB is reachable.
+  - Check DATABASE_URL and that the DB is reachable.
   - Port already in use? Change `PORT` or free the port.
 
 - **401 on protected routes**

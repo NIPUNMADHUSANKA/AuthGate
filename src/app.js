@@ -9,7 +9,7 @@ const passport = require('passport');
 // Register Passport strategies and serializers
 require('./config/passport');
 const app = express();
-const MySQLStoreFactory = require('express-mysql-session');
+const pgSession = require("connect-pg-simple")(session);
 const dbConnection = require('./services/dbConnection');
 const { globalLimiter } = require('./utils/rateLimiting');
 const helmet = require('helmet');
@@ -36,13 +36,11 @@ app.use(helmet({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const MySQLStore = MySQLStoreFactory(session);
-const sessionStore = new MySQLStore({
-    createDatabaseTable: true,
-    clearExpired: true,
-    checkExpirationInterval: 900000,
-    expiration: 86400000,   
-}, dbConnection)
+const sessionStore = new pgSession({
+  pool: dbConnection,       // pg Pool instance
+  tableName: "sessions",    // default
+  createTableIfMissing: true,
+});
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
