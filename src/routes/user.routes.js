@@ -4,8 +4,6 @@ const { validateUser, checkUserRole, verifyJWTToken, validateActivateAccount, va
 const { authLimiter } = require("../utils/rateLimiting");
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-const express = require('express');
-const path = require('path');
 
 const userrouter = require("express").Router();
 
@@ -17,13 +15,13 @@ const swaggerOptions = {
                 version: '1.0.0',
                 description:'AuthGate is a modern authentication gateway built with Node.js and Express.js. It provides secure user signup/login, Google OAuth2, JWT-based session management, email verification, password resets, and role-based access control — all in a lightweight, extensible design.',
             },
-            servers: [{ url: 'https://auth-gate-app.vercel.app' }],
+            servers: [{ url: 'https://auth-gate-app.vercel.app/api' }],
         },
         apis: ['src/routes/*.js'],
 };
 
 const swaggerSpec = swaggerJsDoc(swaggerOptions);
-userrouter.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+userrouter.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 /**
