@@ -23,19 +23,7 @@ const swaggerOptions = {
 };
 
 const swaggerSpec = swaggerJsDoc(swaggerOptions);
-userrouter.use('/api/docs', 
-  express.static(path.join(__dirname, 'path_to_swagger_ui'), {
-    setHeaders: (res, filePath) => {
-      if (filePath.endsWith('.css')) {
-        res.type('text/css');
-      } else if (filePath.endsWith('.js')) {
-        res.type('application/javascript');
-      }
-    }
-  }), 
-  swaggerUi.serve, 
-  swaggerUi.setup(swaggerSpec)
-);
+userrouter.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 /**
