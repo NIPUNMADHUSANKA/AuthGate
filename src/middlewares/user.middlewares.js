@@ -2,6 +2,21 @@ const { checkAccountActivate, getUserById, getUserByEmail } = require("../servic
 const { checkJWTToken, checkEmailActivateToken } = require("../utils/jwtToken");
 const { userSchema, userEmailSchema, userChangePasswordSchema } = require("../utils/userSchema");
 
+const authGateInfo = (req, res) =>{
+    res.status(200).json({
+        service: 'AuthGate',
+        status: 'running',
+        version: '1.0.0'
+    })
+}
+
+const notFoundHandler = (req, res) =>{
+    res.status(404).json({
+        success: false,
+        message: 'Route not found'
+    })
+}
+
 const validateUser = (req, res, next) =>{
     
     const { error, value } = userSchema.validate(req.body);
@@ -100,4 +115,4 @@ const validateChangePasswordDetails = (req, res, next) =>{
     next();
 } 
 
-module.exports = { validateUser, checkUserRole, validateActivateAccount, verifyJWTToken, validateResendVerificationEmail, validforgetPasswordEmail, validateChangePasswordUrl, validateChangePasswordDetails }
+module.exports = { authGateInfo, notFoundHandler, validateUser, checkUserRole, validateActivateAccount, verifyJWTToken, validateResendVerificationEmail, validforgetPasswordEmail, validateChangePasswordUrl, validateChangePasswordDetails }

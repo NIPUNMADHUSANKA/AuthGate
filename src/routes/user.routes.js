@@ -1,6 +1,6 @@
 const passport = require("passport");
 const { userRegister, loginUser, refreshUserToken, userLogout, userActivate, resendVerificationEmail, deleteUserAccount, sendChangePasswordEmail, ChangePassword } = require("../controllers/user.controllers");
-const { validateUser, checkUserRole, verifyJWTToken, validateActivateAccount, validateResendVerificationEmail, validforgetPasswordEmail, validateChangePasswordDetails, validateChangePasswordUrl } = require("../middlewares/user.middlewares");
+const { authGateInfo, notFoundHandler, validateUser, checkUserRole, verifyJWTToken, validateActivateAccount, validateResendVerificationEmail, validforgetPasswordEmail, validateChangePasswordDetails, validateChangePasswordUrl } = require("../middlewares/user.middlewares");
 const { authLimiter } = require("../utils/rateLimiting");
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -23,6 +23,7 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJsDoc(swaggerOptions);
 userrouter.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+userrouter.get('/', authGateInfo);
 
 /**
  * @openapi
@@ -610,5 +611,7 @@ userrouter.post('/api/auth/forgot-password', authLimiter, validforgetPasswordEma
  *         description: Internal Server Error
  */
 userrouter.post('/api/auth/change-password', authLimiter, validateChangePasswordUrl, validateChangePasswordDetails, ChangePassword);
+
+userrouter.use(notFoundHandler);
 
 module.exports = userrouter; 
