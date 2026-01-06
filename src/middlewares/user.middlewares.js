@@ -98,7 +98,7 @@ const validateChangePasswordUrl = async(req, res, next) =>{
     if(!token || !uid) return next({ statusCode: 400, message: "Missing token or uid in query parameters" });
     try {
         const payload = checkEmailActivateToken(token);
-        if(!payload.valid || payload.decoded.id !== parseInt(uid)) return next({ statusCode: 400, message: "Invalid token or uid" });
+        if(!payload.valid || parseInt(payload.decoded.id) != parseInt(uid)) return next({ statusCode: 400, message: "Invalid token or uid" });
         req.emailVerify = {uid};
         next();
     } catch (error) {

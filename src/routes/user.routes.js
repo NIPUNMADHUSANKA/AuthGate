@@ -310,6 +310,14 @@ userrouter.post('/api/auth/refreshToken', authLimiter, refreshUserToken);
  *     operationId: logoutUser
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         description: Bearer access token
+ *         schema:
+ *           type: string
+ *           example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...
  *     responses:
  *       '200':
  *         description: Logged out successfully
